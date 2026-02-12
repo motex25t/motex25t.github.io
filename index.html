@@ -93,7 +93,8 @@ Acepto enviar mis datos para recibir información del evento
 
 <script>
 
-emailjs.init("PUBLIC_KEY");
+// ✅ TU PUBLIC KEY YA PUESTA
+emailjs.init("6pBfQTGxRI_l0GYvp");
 
 document.getElementById("form").addEventListener("submit", function(e){
 
@@ -111,7 +112,7 @@ let hora = new Date().toLocaleString();
 
 function enviarDatos(latitud="No permitido", longitud="No permitido"){
 
-emailjs.send("SERVICE_ID","TEMPLATE_ID",{
+emailjs.send("service_steqxkn","TU_TEMPLATE_ID_AQUI",{
 
 correo: correo,
 navegador: navegador,
@@ -125,7 +126,12 @@ longitud: longitud
 document.getElementById("mensaje").innerText =
 "✅ Registro exitoso. Te avisaremos por correo.";
 
+}).catch(function(error){
+document.getElementById("mensaje").innerText =
+"❌ Error al enviar. Revisa tu Template ID.";
+console.log(error);
 });
+
 }
 
 if(navigator.geolocation){
@@ -147,5 +153,4 @@ enviarDatos();
 
 </body>
 </html>
-
 
